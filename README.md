@@ -1,6 +1,6 @@
 <h1> Advanced Programming </h1>
 
-<h3> This repository contains all assignment in advanced programming course </h3>
+<h3> This repository contains all assignment in "Advanced programming" course </h3>
 
 
 ## Teammates:
