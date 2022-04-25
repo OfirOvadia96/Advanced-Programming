@@ -1,6 +1,14 @@
+CC = gcc
+
 all: stree
 
-stree: stree.c
-	gcc stree.c -o stree
+stree: stree.o
+	$(CC) stree.o -o stree
+
+stree.o: stree.c stree.h
+	$(CC) -c stree.c
+
+.PHONY: clean all slast
+
 clean:
-	rm -f stree *.o
+	rm -f *.o stree
