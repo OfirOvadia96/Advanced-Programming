@@ -4,10 +4,15 @@
 <h4> This repository contains all assignments in "Advanced programming" course </h4>
 
 
-
-
+<h3> Tools: </h3>
+<span>
+  <img src="https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white" alt="Ubuntu" height="30"/>
+  <img src="https://img.shields.io/badge/C-00599C?style=for-the-badge&logo=c&logoColor=white" alt="C" height="30"/>
+  <img src="https://img.shields.io/badge/Shell_Script-121011?style=for-the-badge&logo=gnu-bash&logoColor=white" alt="Shell script" height="30"/>
+ </span>
+ 
+ 
 <h3> Teammates: </h3>
-
 
 <table>
   <tr>
