@@ -8,6 +8,11 @@
 #include <string.h>
 #include <stdbool.h>
 
+void signal_handler(int sig){
+    write(STDOUT_FILENO,"You typed Control-C!",20);
+    printf("\n");
+}
+
 int main()
 {
     char command[1024];
@@ -20,6 +25,9 @@ int main()
 
     while (1)
     {
+        if(signal(SIGINT, signal_handler)){
+            continue;
+        }
         printf("%s: ", prompt_name); // print prompt
         fgets(command, 1024, stdin);
         command[strlen(command) - 1] = '\0';
@@ -45,7 +53,8 @@ int main()
             amper = 1;
             argv[i - 1] = NULL;
         }
-        else{
+        else
+        {
             amper = 0;
         }
 
@@ -79,7 +88,6 @@ int main()
         {
             if (argv[1] == "$?")
             {
-
             }
             else
             {
@@ -89,10 +97,38 @@ int main()
                     printf("%s ", argv[k++]);
                 }
                 printf("\n");
-                
+                continue;
             }
             status_command = true;
         }
+
+        // change directory
+        if (!strcmp(argv[0], "cd"))
+        {
+            char path[100];
+
+            if (!chdir(argv[1]))
+            {
+                // Save the current directory in path
+                if (getcwd(path, sizeof(path)) == NULL)
+                {
+                    perror("getcwd error! - path is NULL");
+                }
+            }
+            else
+            {
+                perror("chdir error!"); // not succeed to change the path
+            }
+
+            continue;
+        }
+
+        if(!strcmp(argv[0],"quit")){
+            
+            exit(0);
+        }
+
+
         /* for commands not part of the shell command language */
 
         if (fork() == 0)
