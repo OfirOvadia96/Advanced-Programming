@@ -8,7 +8,7 @@ stree: stree.o
 stree.o: stree.c stree.h
 	$(CC) -c stree.c
 
-.PHONY: clean all slast
+.PHONY: clean all stree
 
 clean:
 	rm -f *.o stree
