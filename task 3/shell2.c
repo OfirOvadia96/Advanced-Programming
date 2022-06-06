@@ -22,12 +22,12 @@ int main()
     int i, fd, amper, redirect, retid, status;
     char *argv[10];
     bool status_command = false;
+    char *last_command[10];
+    int last_command_size = 0;
 
     while (1)
     {
-        if(signal(SIGINT, signal_handler)){
-            continue;
-        }
+        signal(SIGINT, signal_handler);
         printf("%s: ", prompt_name); // print prompt
         fgets(command, 1024, stdin);
         command[strlen(command) - 1] = '\0';
@@ -43,10 +43,32 @@ int main()
         }
         argv[i] = NULL;
 
-        /* Is command empty */
-        if (argv[0] == NULL)
-            continue;
 
+        //copy last command to execute last command
+        if(!strcmp(argv[0] , "!!")){
+            for(int v=0;  v < last_command_size; v++){
+                argv[v] =  (char*)malloc(strlen(last_command[v]) + 1);
+                strcpy(argv[v], last_command[v]);
+             }
+        }
+
+        //copy my current command
+        else if(strcmp(argv[0] , "!!")){
+            for(int v=0; v < i && argv[v]!=NULL; v++){
+                last_command[v] =  (char*)malloc(strlen(argv[v]) + 1);
+                strcpy(last_command[v] , argv[v]);
+                last_command_size = v+1;
+            }
+        }
+
+
+        /* Is command empty */
+        if (argv[0] == NULL){
+            continue;
+        }
+
+
+        
         /* Does command line end with & */
         if (!strcmp(argv[i - 1], "&"))
         {
