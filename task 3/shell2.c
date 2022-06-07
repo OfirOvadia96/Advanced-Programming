@@ -8,9 +8,25 @@
 #include <string.h>
 #include <stdbool.h>
 
+typedef struct node{
+    char name[10];
+    char value[10];
+
+}node;
+
 void signal_handler(int sig){
     write(STDOUT_FILENO,"You typed Control-C!",20);
     printf("\n");
+}
+
+int if_exists_in_array(char* target , node n [],int size_of_array){
+    
+    for(int index=0; index < size_of_array; index++){
+        if(!strcmp(n[index].name,target)){
+            return index;
+        }
+    }
+    return -1;
 }
 
 int main()
@@ -24,6 +40,8 @@ int main()
     bool status_command = false;
     char *last_command[10];
     int last_command_size = 0;
+    node variable[100];
+    int index_of_variable = 0;
 
     while (1)
     {
@@ -110,13 +128,21 @@ int main()
         {
             if (argv[1] == "$?")
             {
+                ///
             }
             else
             {
                 int k = 1;
                 while (argv[k] != NULL)
-                {
-                    printf("%s ", argv[k++]);
+                {   
+                    int exists_val = if_exists_in_array(argv[k],variable,100);
+                    if(exists_val != -1){
+                        printf("%s ", variable[exists_val].value);
+                    }
+                    else{
+                        printf("%s ", argv[k]);
+                    }
+                    k++;
                 }
                 printf("\n");
                 continue;
@@ -143,6 +169,41 @@ int main()
             }
 
             continue;
+        }
+        if(argv[0][0] == '$' && !strcmp(argv[1],"=") && argv[2] != NULL && argv[3] == NULL){ ////////////////////////
+            int answer_exists = if_exists_in_array(argv[0],variable,100);
+            if(answer_exists != -1){
+                strcpy(variable[answer_exists].value,argv[2]);
+            }
+            else{
+               node *n0 = NULL;
+               n0 = (struct node *)malloc(sizeof(struct node));
+               strcpy(n0->name , argv[0]);
+               strcpy(n0->value , argv[2]);
+               variable[index_of_variable] = *n0;
+                index_of_variable++;
+            }
+        }
+        
+        if(!strcmp(argv[0],"read") && argv[1] != NULL && argv[2] == NULL){
+            char user_value[20];
+            scanf("%[^\n]%*c", user_value); //get value from user
+            //fgets(user_value, 20, stdin);
+            char sign[50] = "$";
+            strcat(sign , argv[1]);
+            int answer_exists = if_exists_in_array(sign,variable,100);
+            
+            if(answer_exists != -1){
+                strcpy(variable[answer_exists].value,user_value);
+            }
+            else{
+               node *n0 = NULL;
+               n0 = (struct node *)malloc(sizeof(struct node));
+               strcpy(n0->name , sign);
+               strcpy(n0->value ,user_value);
+               variable[index_of_variable] = *n0;
+               index_of_variable++;
+            }
         }
 
         if(!strcmp(argv[0],"quit")){
