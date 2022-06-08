@@ -2,11 +2,11 @@ CC = gcc
 
 all: myshell
 
-myshell: shell2.o
-	$(CC) shell2.o -o myshell
+myshell: shell3.o
+	$(CC) shell3.o -o myshell
 
-shell2.o: shell2.c
-	$(CC) -c shell2.c
+shell2.o: shell3.c
+	$(CC) -c shell3.c
 
 .PHONY: clean all myshell
 
