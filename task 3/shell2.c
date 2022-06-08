@@ -35,13 +35,15 @@ int main()
     char *token;
     char *outfile;
     char *prompt_name = "hello";
-    int i, fd, amper, redirect, retid, status;
+    int i, fd, amper, redirect, retid, status, piping;
     char *argv[10];
     bool status_command = false;
     char *last_command[10];
     int last_command_size = 0;
     node variable[100];
     int index_of_variable = 0;
+    int fildes[2];
+    char *argv2[10];
 
     while (1)
     {
@@ -50,6 +52,7 @@ int main()
         fgets(command, 1024, stdin);
         command[strlen(command) - 1] = '\0';
 
+        piping = 0;
         /* parse command line */
         i = 0;
         token = strtok(command, " ");
@@ -58,8 +61,24 @@ int main()
             argv[i] = token;
             token = strtok(NULL, " ");
             i++;
+            if (token && ! strcmp(token, "|")) {
+                piping = 1;
+                break;
+            }
         }
         argv[i] = NULL;
+
+
+        /* Does command contain pipe */
+        if (piping) {
+            i = 0;
+            while (token!= NULL){
+                token = strtok (NULL, " ");
+                argv2[i] = token;
+                i++;
+            }
+            argv2[i] = NULL;
+        }
 
 
         //copy last command to execute last command
@@ -124,31 +143,36 @@ int main()
             status_command = true;
         }
 
-        if (!strcmp(argv[0], "echo"))
-        {
-            if (argv[1] == "$?")
-            {
-                ///
-            }
-            else
-            {
-                int k = 1;
-                while (argv[k] != NULL)
-                {   
-                    int exists_val = if_exists_in_array(argv[k],variable,100);
-                    if(exists_val != -1){
-                        printf("%s ", variable[exists_val].value);
-                    }
-                    else{
-                        printf("%s ", argv[k]);
-                    }
-                    k++;
-                }
-                printf("\n");
-                continue;
-            }
-            status_command = true;
-        }
+        // if (!strcmp(argv[0], "echo"))
+        // {
+        //   //  printf("enter echo");
+        //     if (argv[1] == "$?")
+        //     {
+        //         printf("enter succeed");
+        //         int last_status = 1;
+        //         printf("%d", WEXITSTATUS(status));
+        //         printf("\n");
+        //         continue;
+        //     }
+        //     else
+        //     {
+        //         int k = 1;
+        //         while (argv[k] != NULL)
+        //         {   
+        //             int exists_val = if_exists_in_array(argv[k],variable,100);
+        //             if(exists_val != -1){
+        //                 printf("%s ", variable[exists_val].value);
+        //             }
+        //             else{
+        //                 printf("%s ", argv[k]);
+        //             }
+        //             k++;
+        //         }
+        //         printf("\n");
+        //         continue;
+        //     }
+        //     status_command = true;
+        // }
 
         // change directory
         if (!strcmp(argv[0], "cd"))
@@ -170,7 +194,7 @@ int main()
 
             continue;
         }
-        if(argv[0][0] == '$' && !strcmp(argv[1],"=") && argv[2] != NULL && argv[3] == NULL){ ////////////////////////
+        if(argv[0][0] == '$' && !strcmp(argv[1],"=") && argv[2] != NULL && argv[3] == NULL){
             int answer_exists = if_exists_in_array(argv[0],variable,100);
             if(answer_exists != -1){
                 strcpy(variable[answer_exists].value,argv[2]);
@@ -221,6 +245,36 @@ int main()
             // for output to terminal
             if (redirect == 0)
             {
+                if (!strcmp(argv[0], "echo"))
+        {
+          //  printf("enter echo");
+            if (argv[1] == "$?")
+            {
+                printf("enter succeed");
+                int last_status = 1;
+                printf("%d", WEXITSTATUS(status));
+                printf("\n");
+                continue;
+            }
+            else
+            {
+                int k = 1;
+                while (argv[k] != NULL)
+                {   
+                    int exists_val = if_exists_in_array(argv[k],variable,100);
+                    if(exists_val != -1){
+                        printf("%s ", variable[exists_val].value);
+                    }
+                    else{
+                        printf("%s ", argv[k]);
+                    }
+                    k++;
+                }
+                printf("\n");
+                continue;
+            }
+            status_command = true;
+        }
             }
             // write to file
             else if (redirect == 1)
@@ -238,8 +292,29 @@ int main()
                 dup(fd);
                 close(fd);
             }
-
-            execvp(argv[0], argv);
+            if (piping) {
+                pipe (fildes);
+                if (fork() == 0) { 
+                    /* first component of command line */ 
+                    close(STDOUT_FILENO); 
+                    dup(fildes[1]); 
+                    close(fildes[1]); 
+                    close(fildes[0]); 
+                    /* stdout now goes to pipe */ 
+                    /* child process does command */ 
+                    execvp(argv[0], argv);
+                } 
+                /* 2nd command component of command line */ 
+                close(STDIN_FILENO);
+                dup(fildes[0]);
+                close(fildes[0]); 
+                close(fildes[1]); 
+                /* standard input now comes from pipe */ 
+                execvp(argv2[0], argv2);
+            } 
+            else{
+                execvp(argv[0], argv);
+            }
         }
 
         /* parent continues here */
