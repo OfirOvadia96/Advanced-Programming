@@ -50,7 +50,7 @@ int main()
 
     while (1)
     {
-        sig_t prev_sigint_handler1 = signal(SIGINT, signal_handler);
+        signal(SIGINT, signal_handler); //handler with Ctrl + C
         printf("%s: ", prompt_name); // print prompt
         fgets(command, 1024, stdin);
         command[strlen(command) - 1] = '\0';
@@ -129,6 +129,25 @@ int main()
             exit(0);
         }
 
+        // copy last command to execute last command
+            if (!strcmp(argv1[0], "!!"))
+            {
+                for (int v = 0; v < last_command_size; v++)
+                {
+                    argv1[v] = (char *)malloc(strlen(last_command[v]) + 1);
+                    strcpy(argv1[v], last_command[v]);
+                }
+            }
+            // copy my current command
+            else if (strcmp(argv1[0], "!!"))
+            {
+                for (int v = 0; v < i && argv1[v] != NULL; v++)
+                {
+                    last_command[v] = (char *)malloc(strlen(argv1[v]) + 1);
+                    strcpy(last_command[v], argv1[v]);
+                    last_command_size = v + 1;
+                }
+            }
         /* for commands not part of the shell command language */
 
         if (fork() == 0)
@@ -157,25 +176,7 @@ int main()
                 prompt_name = argv1[2];
             }
 
-            // copy last command to execute last command
-            if (!strcmp(argv1[0], "!!"))
-            {
-                for (int v = 0; v < last_command_size; v++)
-                {
-                    argv1[v] = (char *)malloc(strlen(last_command[v]) + 1);
-                    strcpy(argv1[v], last_command[v]);
-                }
-            }
-            // copy my current command
-            else if (strcmp(argv1[0], "!!"))
-            {
-                for (int v = 0; v < i && argv1[v] != NULL; v++)
-                {
-                    last_command[v] = (char *)malloc(strlen(argv1[v]) + 1);
-                    strcpy(last_command[v], argv1[v]);
-                    last_command_size = v + 1;
-                }
-            }
+
             // print to terminal
             if (!strcmp(argv1[0], "echo"))
             {
@@ -194,8 +195,7 @@ int main()
                     k++;
                 }
                 printf("\n");
-                // continue;
-                exit(0);
+                continue;
             }
 
             // change directory
@@ -216,7 +216,6 @@ int main()
                     perror("chdir error!"); // not succeed to change the path
                 }
 
-                exit(0);
             }
             // save and use variable
             if (argv1[0][0] == '$' && !strcmp(argv1[1], "=") && argv1[2] != NULL && argv1[3] == NULL)
@@ -281,7 +280,6 @@ int main()
                 close(fildes[1]);
                 /* standard input now comes from pipe */
                 execvp(argv2[0], argv2);
-                exit(0);
             }
             else
                 execvp(argv1[0], argv1);
