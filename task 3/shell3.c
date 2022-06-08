@@ -50,7 +50,7 @@ int main()
 
     while (1)
     {
-        sig_t prev_sigint_handler1 = signal(SIGINT, signal_handler);
+        signal(SIGINT, signal_handler); //handler with Ctrl + C
         printf("%s: ", prompt_name); // print prompt
         fgets(command, 1024, stdin);
         command[strlen(command) - 1] = '\0';
