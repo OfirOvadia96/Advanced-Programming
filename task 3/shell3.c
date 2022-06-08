@@ -117,12 +117,12 @@ int main()
             continue;
         }
         // redirect to stderr
-        // if (!strcmp(argv1[i - 2], "2>"))
-        // {
-        //     redirect = 2;
-        //     argv1[i - 2] = NULL;
-        //     outfile = argv1[i - 1];
-        // }
+        if (argv1[i - 2] != NULL && !strcmp(argv1[i - 2], "2>"))
+        {
+            redirect = 2;
+            argv1[i - 2] = NULL;
+            outfile = argv1[i - 1];
+        }
 
         if (!strcmp(argv1[0], "quit"))
         {
@@ -153,7 +153,7 @@ int main()
         if (fork() == 0)
         {
             /* redirection of IO ? */
-            if (redirect)
+            if (redirect == 1)
             {
                 fd = creat(outfile, 0660);
                 close(STDOUT_FILENO);
@@ -165,7 +165,7 @@ int main()
             else if (redirect == 2)
             {
                 fd = creat(outfile, 0660); // equal to open(outfile,O_WRONLY|O_CREAT|O_TRUNC,mode)
-                close(STDOUT_FILENO);
+                close(STDERR_FILENO);
                 dup(fd);
                 close(fd);
             }
