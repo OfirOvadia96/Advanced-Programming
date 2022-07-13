@@ -1,4 +1,4 @@
-<h1> Task 3 - "stree" </h1>
+<h1> Task 3 - "shell" </h1>
 
 <h3> Implementation of a shell program in the C language </h3>
 
