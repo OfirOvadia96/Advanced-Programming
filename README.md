@@ -1,10 +1,10 @@
-<h1> Advanced Programming </h1>
+<h1 align="center"> Advanced Programming </h1>
 
 
-<h4> This repository contains all assignments in "Advanced programming" course </h4>
+<h4 align="center"> This repository contains the assignments in "Advanced Programming" course </h4>
 
-
-<h3> Tools: </h3>
+<div align="center">
+<h3 > Tools: </h3>
 <span>
   <img src="https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black" alt="linux" height="30"/>
   <img src="https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white" alt="Ubuntu" height="30"/>
@@ -13,7 +13,7 @@
  </span>
  
  
-<h3> Teammates: </h3>
+<h3 align="center"> Teammates: </h3>
 
 <table>
   <tr>
@@ -21,3 +21,4 @@
     <td align="center"><a href="https://github.com/Lioo7"><img src="https://i.ibb.co/8DcPJcp/147595777-5e237203-7eee-4c11-b680-edda12b83979.png" width="100px;" alt=""/><br /><sub><b>Lioz Akirav</b></sub></a><br /> </td>
   </tr>
 </table>
+</div>
